@@ -1,0 +1,31 @@
+Parameters:
+
+  AdministratorAccountId:
+    Type: String
+    Description: AWS Account Id of the administrator account (the account in which StackSets will be created).
+    MaxLength: 12
+    MinLength: 12
+
+  Environment:
+    Type: String
+    Description: To set environment names in front of resources.
+
+Resources:
+  # First, a VPC:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value:  !Join ['', [!Ref "AWS::StackName", "-VPC-",!Ref "Environment" ]]
+#        Value:  !Join ['', [!Ref "AWS::StackName", "-VPC" ]]
+
+
+  DeveloperUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+     UserName: '{{resolve:ssm:apiKey:2}}'
+      # UserName: cf1vpc
